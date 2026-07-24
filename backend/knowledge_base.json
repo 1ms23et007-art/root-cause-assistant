@@ -1,0 +1,588 @@
+{
+  "dtc_entries": {
+    "P0171": {
+      "code": "P0171",
+      "description": "System Too Lean (Bank 1) – ECM determines from O2 sensor feedback and fuel trim data that the air-fuel mixture is leaner than the stoichiometric 14.7:1 ratio on engine Bank 1.",
+      "severity": "medium",
+      "typical_causes": [
+        "MAF sensor contamination or aging causing under-reporting of intake air mass",
+        "Vacuum leak (intake manifold gasket, cracked vacuum hose, brake booster line)",
+        "Weak fuel injector (partially clogged – low flow rate)",
+        "Low fuel pressure (failing fuel pump or clogged fuel filter)",
+        "O2 sensor bias toward lean due to aging or exhaust leak near sensor",
+        "PCV system failure pulling excessive unmetered air",
+        "Stuck-open EGR valve admitting unmetered exhaust gas"
+      ],
+      "diagnostic_priority_order": [
+        "Check LTFT – if >+10% suspect air leak or MAF under-read",
+        "Inspect MAF sensor for oil contamination (often from oily air filter)",
+        "Smoke test intake for vacuum leaks",
+        "Check fuel pressure at rail (spec 45–55 psi at idle for MPFI)",
+        "Inspect fuel injectors for pulse width / flow balance",
+        "Check O2 sensor switching rate and bias voltage",
+        "Inspect EGR valve and position sensor"
+      ],
+      "validation_thresholds": {
+        "ltft_normal_range_pct": [-10, 10],
+        "stft_normal_range_pct": [-10, 10],
+        "maf_at_idle_gs": [3.5, 6.0],
+        "maf_at_2500rpm_gs": [12.0, 22.0],
+        "o2_switching_freq_hz": [0.3, 1.5],
+        "o2_voltage_rich_V": [0.7, 1.0],
+        "o2_voltage_lean_V": [0.0, 0.3],
+        "fuel_pressure_psi": [43, 58],
+        "manifold_vacuum_inHg": [17, 22]
+      },
+      "repair_procedures": [
+        {
+          "step": 1,
+          "action": "Inspect air filter and MAF sensor housing for dirt, oil film, or debris",
+          "tool": "Visual inspection + MAF cleaner spray",
+          "est_time_min": 15,
+          "verification": "After cleaning, check live LTFT at idle – should return toward 0% within 2 drive cycles"
+        },
+        {
+          "step": 2,
+          "action": "Smoke test intake manifold and all vacuum lines for leaks",
+          "tool": "Smoke machine / intake smoke tester",
+          "est_time_min": 30,
+          "verification": "No smoke visible at any joint; manifold vacuum stable ≥18 inHg"
+        },
+        {
+          "step": 3,
+          "action": "Check fuel pressure at Schrader valve on fuel rail",
+          "tool": "Fuel pressure gauge",
+          "est_time_min": 20,
+          "verification": "Pressure 43–58 psi at idle, drops <2 psi in 10 min key-off soak"
+        },
+        {
+          "step": 4,
+          "action": "Perform injector balance test or flow bench check",
+          "tool": "OBD scanner with injector balance test / noid light",
+          "est_time_min": 45,
+          "verification": "All injectors within 5% flow rate of each other"
+        },
+        {
+          "step": 5,
+          "action": "Replace MAF sensor if cleaning did not resolve LTFT deviation",
+          "tool": "Torx T20 screwdriver, wiring harness connector",
+          "est_time_min": 25,
+          "verification": "LTFT returns to ±5% within two drive cycles after replacement"
+        }
+      ],
+      "estimated_fix_time_hr": 1.5,
+      "required_tools": ["OBD-II scanner", "Smoke machine", "Fuel pressure gauge", "Digital multimeter", "MAF cleaner"]
+    },
+
+    "P0174": {
+      "code": "P0174",
+      "description": "System Too Lean (Bank 2) – same mechanism as P0171 but for the second bank of a V-engine configuration.",
+      "severity": "medium",
+      "typical_causes": [
+        "Vacuum leak specific to Bank 2 intake runners or valley cover",
+        "Bank 2 MAF sensor or split-design VAF fault",
+        "Bank 2 fuel injectors weak or clogged",
+        "Single-bank O2 sensor fault biasing LTFT",
+        "Common power/ground fault affecting both banks simultaneously (if P0171 also present)"
+      ],
+      "diagnostic_priority_order": [
+        "Compare Bank 1 and Bank 2 LTFT – if both lean, common-cause fault (MAF, fuel pressure)",
+        "If only Bank 2 lean: localized vacuum leak or injector issue",
+        "Smoke test Bank 2 intake manifold separately",
+        "Check Bank 2 O2 sensor heater resistance (spec 2–30 Ω)",
+        "Balance test Bank 2 injectors"
+      ],
+      "validation_thresholds": {
+        "ltft_normal_range_pct": [-10, 10],
+        "bank_ltft_imbalance_threshold_pct": 5,
+        "o2_heater_resistance_ohm": [2, 30],
+        "fuel_pressure_psi": [43, 58]
+      },
+      "repair_procedures": [
+        {
+          "step": 1,
+          "action": "Compare Bank 1 vs Bank 2 LTFT live data – if both >+10%, treat as P0171 (common cause)",
+          "tool": "OBD-II live data scanner",
+          "est_time_min": 10,
+          "verification": "Bank 1 LTFT within ±5%, Bank 2 elevated confirms localized fault"
+        },
+        {
+          "step": 2,
+          "action": "Smoke test Bank 2 intake valley and manifold gaskets",
+          "tool": "Smoke machine",
+          "est_time_min": 30,
+          "verification": "No smoke egress on Bank 2 side"
+        },
+        {
+          "step": 3,
+          "action": "Test Bank 2 O2 sensor heater circuit continuity and response time",
+          "tool": "Digital multimeter",
+          "est_time_min": 20,
+          "verification": "Heater resistance 2–30 Ω; sensor reaches closed-loop within 90 sec of cold start"
+        },
+        {
+          "step": 4,
+          "action": "Flow-test Bank 2 injectors – replace or clean if >5% flow deviation",
+          "tool": "Injector flow bench or ultrasonic cleaner",
+          "est_time_min": 90,
+          "verification": "Flow balance within 3% across all Bank 2 injectors"
+        }
+      ],
+      "estimated_fix_time_hr": 2.0,
+      "required_tools": ["OBD-II scanner", "Smoke machine", "Digital multimeter", "Injector test kit"]
+    },
+
+    "P0300": {
+      "code": "P0300",
+      "description": "Random/Multiple Cylinder Misfire Detected – ECM's misfire monitor detected misfires that are distributed randomly across multiple cylinders rather than isolated to one.",
+      "severity": "high",
+      "typical_causes": [
+        "Degraded or worn spark plugs (electrodes worn, gap >0.045 in)",
+        "Weak ignition coil pack output (all coils share a common module)",
+        "Low fuel pressure causing multiple cylinder lean misfire",
+        "Vacuum leak causing lean mixture across all cylinders",
+        "Retarded ignition timing",
+        "EGR stuck open – excessive inert gas dilution",
+        "Low compression on multiple cylinders (timing chain stretched)"
+      ],
+      "diagnostic_priority_order": [
+        "Check for any other co-occurring DTCs (P0171/P0174 suggests lean cause)",
+        "Inspect spark plugs – look for fouling, worn electrodes, cracked porcelain",
+        "Check ignition coil output voltage (spec ≥40 kV peak)",
+        "Verify fuel pressure under load (should not drop below 40 psi at WOT)",
+        "Perform compression test (spec typically 150–200 psi, <10% variation)",
+        "Check timing chain stretch via cam/crank correlation test"
+      ],
+      "validation_thresholds": {
+        "misfire_count_per_1000_rev": 5,
+        "spark_plug_gap_in": [0.028, 0.045],
+        "ignition_coil_primary_resistance_ohm": [0.5, 2.0],
+        "ignition_coil_secondary_resistance_kohm": [6, 15],
+        "compression_psi_min": 150,
+        "compression_variation_pct_max": 10,
+        "fuel_pressure_wot_psi_min": 40
+      },
+      "repair_procedures": [
+        {
+          "step": 1,
+          "action": "Read all stored DTCs; if P0171/P0174 present, address lean condition first",
+          "tool": "OBD-II scanner",
+          "est_time_min": 10,
+          "verification": "Root lean DTC resolved before proceeding to spark/ignition"
+        },
+        {
+          "step": 2,
+          "action": "Remove and inspect all spark plugs; measure gap with feeler gauge",
+          "tool": "Spark plug socket, feeler gauge",
+          "est_time_min": 45,
+          "verification": "Gap within OEM spec (typically 0.032–0.044 in); no fouling or erosion"
+        },
+        {
+          "step": 3,
+          "action": "Test ignition coil pack primary/secondary resistance",
+          "tool": "Digital multimeter (resistance mode)",
+          "est_time_min": 20,
+          "verification": "Primary 0.5–2.0 Ω, secondary 6–15 kΩ; replace if out of spec"
+        },
+        {
+          "step": 4,
+          "action": "Check fuel pressure at idle and under snap-throttle load",
+          "tool": "Fuel pressure gauge",
+          "est_time_min": 25,
+          "verification": "≥43 psi idle, does not drop below 40 psi during WOT snap"
+        },
+        {
+          "step": 5,
+          "action": "Compression test all cylinders",
+          "tool": "Compression gauge / leakdown tester",
+          "est_time_min": 60,
+          "verification": "All cylinders ≥150 psi, <10% variation"
+        }
+      ],
+      "estimated_fix_time_hr": 3.0,
+      "required_tools": ["OBD-II scanner", "Spark plug socket set", "Compression gauge", "Digital multimeter", "Fuel pressure gauge"]
+    },
+
+    "P0301": {
+      "code": "P0301",
+      "description": "Cylinder 1 Misfire Detected – ECM detected misfire events exceeding threshold specifically on cylinder 1.",
+      "severity": "high",
+      "typical_causes": [
+        "Cylinder 1 spark plug fouled, worn, or cracked",
+        "Cylinder 1 coil-on-plug (COP) failure",
+        "Cylinder 1 fuel injector clogged or leaking",
+        "Low compression in cylinder 1 (worn rings, damaged valves)",
+        "Cylinder 1 plug wire failure (if non-COP)"
+      ],
+      "diagnostic_priority_order": [
+        "Swap Cylinder 1 COP coil to Cylinder 2; if misfire moves to P0302, coil is faulty",
+        "Inspect/replace Cylinder 1 spark plug",
+        "Check Cylinder 1 injector pulse width and fuel delivery",
+        "Compression + leakdown test on Cylinder 1"
+      ],
+      "validation_thresholds": {
+        "compression_psi_min": 150,
+        "leakdown_pct_max": 15,
+        "injector_pulse_width_ms_at_idle": [1.8, 3.5]
+      },
+      "repair_procedures": [
+        {
+          "step": 1,
+          "action": "Swap Cylinder 1 COP to Cylinder 2, clear DTCs, test drive",
+          "tool": "8mm socket",
+          "est_time_min": 15,
+          "verification": "Misfire DTC moves to P0302 → coil confirmed faulty; replace Cylinder 1 coil"
+        },
+        {
+          "step": 2,
+          "action": "Remove Cylinder 1 spark plug; inspect for fouling, gap, cracks",
+          "tool": "Spark plug socket 5/8 in",
+          "est_time_min": 15,
+          "verification": "Gap 0.032–0.044 in; no carbon or oil fouling"
+        },
+        {
+          "step": 3,
+          "action": "Check Cylinder 1 injector with noid light and oscilloscope",
+          "tool": "Noid light, oscilloscope",
+          "est_time_min": 30,
+          "verification": "Clean square-wave pulse; no short or open"
+        },
+        {
+          "step": 4,
+          "action": "Compression + leakdown test Cylinder 1",
+          "tool": "Compression/leakdown gauge",
+          "est_time_min": 30,
+          "verification": ">150 psi compression; <15% leakdown"
+        }
+      ],
+      "estimated_fix_time_hr": 1.5,
+      "required_tools": ["8mm socket", "Spark plug socket", "Noid light", "Compression/leakdown tester"]
+    },
+
+    "P0302": {
+      "code": "P0302",
+      "description": "Cylinder 2 Misfire Detected – ECM detected misfire events exceeding threshold specifically on cylinder 2.",
+      "severity": "high",
+      "typical_causes": [
+        "Cylinder 2 COP failure",
+        "Fuel injector partial clog (reduced spray pattern)",
+        "Cylinder 2 intake valve deposits restricting flow",
+        "Spark plug fouled with oil (valve stem seal leak)"
+      ],
+      "diagnostic_priority_order": [
+        "Swap COP coil from Cylinder 2 to another; misfire follows coil → replace",
+        "Inspect Cylinder 2 plug for oil fouling (indicates valve seal issue)",
+        "Injector cleaning or replacement",
+        "Compression test"
+      ],
+      "validation_thresholds": {
+        "compression_psi_min": 150,
+        "leakdown_pct_max": 15
+      },
+      "repair_procedures": [
+        {"step": 1, "action": "COP swap test (same as P0301 Step 1)", "tool": "8mm socket", "est_time_min": 15, "verification": "Misfire follows coil → replace"},
+        {"step": 2, "action": "Inspect plug for oil fouling; check valve stem seal", "tool": "Spark plug socket", "est_time_min": 20, "verification": "No oil on plug; blue smoke test negative"},
+        {"step": 3, "action": "Injector balance test / ultrasonic clean", "tool": "Injector flow bench", "est_time_min": 60, "verification": "Flow within 3% of spec"}
+      ],
+      "estimated_fix_time_hr": 2.0,
+      "required_tools": ["8mm socket", "Spark plug socket", "Injector cleaner kit"]
+    },
+
+    "P0303": {
+      "code": "P0303",
+      "description": "Cylinder 3 Misfire Detected – ECM detected misfire events exceeding threshold specifically on cylinder 3.",
+      "severity": "high",
+      "typical_causes": [
+        "Cylinder 3 COP failure (most common)",
+        "Cylinder 3 spark plug end-of-life",
+        "Fuel injector restricted",
+        "Low compression or head gasket breach between cylinders 3 and adjacent"
+      ],
+      "diagnostic_priority_order": [
+        "COP swap test",
+        "Spark plug inspection",
+        "Leakdown test with adjacent cylinder comparison",
+        "Injector balance test"
+      ],
+      "validation_thresholds": {
+        "compression_psi_min": 150,
+        "leakdown_pct_max": 15
+      },
+      "repair_procedures": [
+        {"step": 1, "action": "COP swap test", "tool": "8mm socket", "est_time_min": 15, "verification": "Misfire follows coil"},
+        {"step": 2, "action": "Inspect plug and gap", "tool": "Spark plug socket", "est_time_min": 15, "verification": "Gap 0.032–0.044 in"},
+        {"step": 3, "action": "Leakdown test; listen for air in adjacent cylinder", "tool": "Leakdown tester", "est_time_min": 30, "verification": "<15% leakdown; no cross-cylinder pressure"}
+      ],
+      "estimated_fix_time_hr": 2.0,
+      "required_tools": ["8mm socket", "Spark plug socket", "Leakdown tester"]
+    },
+
+    "P0304": {
+      "code": "P0304",
+      "description": "Cylinder 4 Misfire Detected – ECM detected misfire events exceeding threshold specifically on cylinder 4.",
+      "severity": "high",
+      "typical_causes": [
+        "Cylinder 4 COP failure",
+        "Low compression (common on rear cylinder due to cooling differences)",
+        "Head gasket failure (combustion chamber sealed to coolant)",
+        "Cylinder 4 injector failure"
+      ],
+      "diagnostic_priority_order": [
+        "COP swap test",
+        "Check for white smoke / coolant loss (head gasket)",
+        "Compression + leakdown",
+        "Injector check"
+      ],
+      "validation_thresholds": {
+        "compression_psi_min": 150,
+        "leakdown_pct_max": 15,
+        "coolant_loss_ml_per_1000km_max": 100
+      },
+      "repair_procedures": [
+        {"step": 1, "action": "COP swap test", "tool": "8mm socket", "est_time_min": 15, "verification": "Misfire follows coil"},
+        {"step": 2, "action": "Combustion leak test on coolant reservoir", "tool": "Block test kit (combustion gas colorimetric test)", "est_time_min": 15, "verification": "Fluid stays blue (no combustion gases in coolant)"},
+        {"step": 3, "action": "Compression test Cylinder 4 vs adjacent", "tool": "Compression gauge", "est_time_min": 20, "verification": "Within 10% of adjacent cylinder"},
+        {"step": 4, "action": "Full leakdown test", "tool": "Leakdown tester", "est_time_min": 30, "verification": "<15% leakdown on Cylinder 4"}
+      ],
+      "estimated_fix_time_hr": 2.5,
+      "required_tools": ["8mm socket", "Compression gauge", "Block test kit", "Leakdown tester"]
+    },
+
+    "P0562": {
+      "code": "P0562",
+      "description": "System Voltage Low – ECM detects battery/charging system voltage below the low-voltage threshold (typically <10.5 V) for more than 30 seconds.",
+      "severity": "high",
+      "typical_causes": [
+        "Weak or failing battery (internal resistance too high, CCA below spec)",
+        "Failing alternator (output <13.5 V at cruise RPM)",
+        "High-resistance battery cable connection (corroded terminal, loose clamp)",
+        "Bad ground strap between engine block and chassis/battery negative",
+        "Parasitic drain depleting battery faster than alternator charges"
+      ],
+      "diagnostic_priority_order": [
+        "Load test battery (CCA vs spec – e.g., 600 CCA battery should hold >9.6 V during 15 sec 300A load)",
+        "Check alternator output voltage at 2000 RPM (spec 13.5–14.5 V)",
+        "Inspect all battery cable terminals for corrosion and tightness",
+        "Measure voltage drop across battery cables under load (<0.2 V acceptable)",
+        "Check for parasitic draw (should be <50 mA after 20-min sleep)"
+      ],
+      "validation_thresholds": {
+        "battery_voltage_min_V": 11.5,
+        "battery_voltage_operating_V": [13.5, 14.7],
+        "alternator_output_at_2000rpm_V": [13.5, 14.7],
+        "battery_cable_voltage_drop_V": 0.2,
+        "battery_load_test_hold_V": 9.6,
+        "parasitic_draw_mA_max": 50
+      },
+      "repair_procedures": [
+        {
+          "step": 1,
+          "action": "Battery load test – check CCA and voltage hold under load",
+          "tool": "Battery load tester / conductance tester",
+          "est_time_min": 10,
+          "verification": "Battery holds ≥9.6 V at rated CCA load for 15 seconds; replace if fails"
+        },
+        {
+          "step": 2,
+          "action": "Check alternator output: battery voltage at idle and 2000 RPM",
+          "tool": "Digital multimeter at battery terminals",
+          "est_time_min": 10,
+          "verification": "13.5–14.7 V at 2000 RPM with all accessories on"
+        },
+        {
+          "step": 3,
+          "action": "Inspect and clean battery terminals; torque to spec",
+          "tool": "Terminal cleaner brush, torque wrench",
+          "est_time_min": 15,
+          "verification": "Voltage drop across positive cable <0.1 V under load"
+        },
+        {
+          "step": 4,
+          "action": "Check engine ground straps continuity and corrosion",
+          "tool": "Digital multimeter (mV drop test)",
+          "est_time_min": 20,
+          "verification": "<0.1 V drop between engine block and battery negative under load"
+        },
+        {
+          "step": 5,
+          "action": "Parasitic draw test – check for abnormal current drain",
+          "tool": "Clamp ammeter or DMM in series at battery",
+          "est_time_min": 30,
+          "verification": "<50 mA after 20-minute key-off sleep period"
+        }
+      ],
+      "estimated_fix_time_hr": 1.0,
+      "required_tools": ["Battery load tester", "Digital multimeter", "Terminal cleaning kit", "Clamp ammeter"]
+    },
+
+    "P0563": {
+      "code": "P0563",
+      "description": "System Voltage High – ECM detects charging system voltage exceeding the high-voltage threshold (typically >16 V) for more than 30 seconds.",
+      "severity": "medium",
+      "typical_causes": [
+        "Failing alternator voltage regulator (internal or external) – no longer limiting output",
+        "Shorted field winding in alternator rotor",
+        "Faulty PCM alternator control output (on smart charging systems)",
+        "Incorrect alternator installed (wrong output rating)"
+      ],
+      "diagnostic_priority_order": [
+        "Measure alternator output at battery terminals with DVM at 2000 RPM",
+        "Check alternator field control wire voltage from PCM",
+        "Inspect for correct alternator part number",
+        "Load-test alternator output under full electrical load"
+      ],
+      "validation_thresholds": {
+        "battery_voltage_max_V": 14.7,
+        "alternator_high_threshold_V": 16.0
+      },
+      "repair_procedures": [
+        {
+          "step": 1,
+          "action": "Measure voltage at battery terminals at 1500 RPM",
+          "tool": "Digital multimeter",
+          "est_time_min": 5,
+          "verification": "Should be 13.5–14.7 V; if >15.5 V, alternator regulation failed"
+        },
+        {
+          "step": 2,
+          "action": "Check alternator field terminal voltage from PCM",
+          "tool": "Digital multimeter",
+          "est_time_min": 15,
+          "verification": "Confirm PCM is issuing correct duty cycle command; if no PCM output, check PCM alt control fuse"
+        },
+        {
+          "step": 3,
+          "action": "Replace alternator (regulator internal to most modern alternators)",
+          "tool": "Serpentine belt tool, ratchet set",
+          "est_time_min": 90,
+          "verification": "Voltage 13.5–14.7 V at all RPM with accessory load"
+        }
+      ],
+      "estimated_fix_time_hr": 2.0,
+      "required_tools": ["Digital multimeter", "Serpentine belt tool", "Ratchet and socket set"]
+    },
+
+    "U0100": {
+      "code": "U0100",
+      "description": "Lost Communication With ECM/PCM 'A' – One module on the CAN bus cannot communicate with the ECM/PCM. May be triggered by ECM power loss, ground fault, or CAN bus wiring fault.",
+      "severity": "critical",
+      "typical_causes": [
+        "CAN bus wiring fault – broken wire, corroded connector, short to ground or +12V",
+        "ECM power supply failure (blown fuse, bad relay)",
+        "ECM ground connection failure",
+        "Terminating resistor failure (CAN bus should measure 60 Ω between CAN-H and CAN-L)",
+        "Water/corrosion ingress into ECM connector",
+        "Low system voltage causing ECM to reset or drop off bus"
+      ],
+      "diagnostic_priority_order": [
+        "Check ECM power and ground fuses (typically B+ and Ign supply fuses in IPDM)",
+        "Measure CAN bus resistance (CAN-H to CAN-L) – should be 60 Ω (two 120 Ω terminators in parallel)",
+        "Check CAN bus voltage levels (CAN-H ~2.5–3.5 V, CAN-L ~1.5–2.5 V)",
+        "Inspect ECM connector for corrosion, bent pins, water intrusion",
+        "Wiggle test harness near ECM under OBD live monitoring"
+      ],
+      "validation_thresholds": {
+        "can_bus_resistance_ohm": 60,
+        "can_terminator_resistance_ohm": 120,
+        "can_h_voltage_V": [2.5, 3.5],
+        "can_l_voltage_V": [1.5, 2.5],
+        "ecm_supply_voltage_V": [10.5, 16.0]
+      },
+      "repair_procedures": [
+        {
+          "step": 1,
+          "action": "Check all ECM-related fuses in underhood fuse box",
+          "tool": "Test light / digital multimeter",
+          "est_time_min": 10,
+          "verification": "All ECM fuses intact; voltage present on ECM B+ pin with key-off"
+        },
+        {
+          "step": 2,
+          "action": "Measure CAN bus termination resistance at OBD-II port pins 6 (CAN-H) and 14 (CAN-L)",
+          "tool": "Digital multimeter (resistance mode, key off, connectors disconnected)",
+          "est_time_min": 10,
+          "verification": "60 Ω (±5 Ω); if open, one terminator missing; if short, wiring fault"
+        },
+        {
+          "step": 3,
+          "action": "Inspect ECM harness connector – check for corrosion, pushed-back pins",
+          "tool": "Pick tool, contact cleaner, pin extraction kit",
+          "est_time_min": 30,
+          "verification": "All pins fully seated; no green corrosion; contact resistance <0.5 Ω"
+        },
+        {
+          "step": 4,
+          "action": "Perform wiggle test on CAN bus wiring with OBD live data active",
+          "tool": "OBD-II scanner with live CAN bus monitoring",
+          "est_time_min": 20,
+          "verification": "No communication drop-outs during flex/wiggle of harness near ECM and firewall grommet"
+        },
+        {
+          "step": 5,
+          "action": "Scope CAN-H and CAN-L waveforms for signal integrity",
+          "tool": "Digital oscilloscope, CAN bus breakout box",
+          "est_time_min": 45,
+          "verification": "Clean trapezoidal waveform, differential swing 2 V, no ringing or flat spots"
+        }
+      ],
+      "estimated_fix_time_hr": 2.5,
+      "required_tools": ["OBD-II scanner", "Digital multimeter", "Digital oscilloscope", "CAN bus breakout box", "Contact cleaner", "Pin extraction kit"]
+    }
+  },
+
+  "fault_pattern_correlations": {
+    "P0171+P0174_simultaneous": {
+      "interpretation": "Both banks lean simultaneously → common cause (MAF under-read, low fuel pressure, severe vacuum leak) rather than bank-specific fault",
+      "priority_cause": "MAF sensor or fuel pressure"
+    },
+    "P0171+U0100": {
+      "interpretation": "Lean condition + CAN dropout → suspect common ground fault, especially if batt_voltage low",
+      "priority_cause": "Power/ground fault"
+    },
+    "P0562+U0100": {
+      "interpretation": "Low voltage + CAN dropout → severe power supply issue; ECM dropping off bus due to under-voltage",
+      "priority_cause": "Battery/charging system failure"
+    },
+    "P0300+P0171": {
+      "interpretation": "Random misfire + lean → misfire is CAUSED by lean mixture, not independent ignition fault; fix lean condition first",
+      "priority_cause": "Lean condition root cause"
+    },
+    "multi_cylinder_misfires": {
+      "interpretation": "Misfires on 3+ cylinders → fuel pressure, ignition timing, or vacuum leak more likely than individual coil/plug failures",
+      "priority_cause": "Common-cause fault"
+    }
+  },
+
+  "signal_health_thresholds": {
+    "maf": {
+      "idle_range_gs": [3.5, 6.0],
+      "max_slew_rate_gs_per_sec": 50,
+      "drift_warning_pct": 8,
+      "drift_fault_pct": 12
+    },
+    "o2_voltage": {
+      "min_switching_freq_hz": 0.2,
+      "max_switching_freq_hz": 2.0,
+      "lean_threshold_V": 0.3,
+      "rich_threshold_V": 0.7
+    },
+    "ltft": {
+      "warning_pct": 8,
+      "fault_pct": 10
+    },
+    "batt_voltage": {
+      "low_warning_V": 11.8,
+      "low_fault_V": 10.5,
+      "high_warning_V": 15.0,
+      "high_fault_V": 16.0
+    },
+    "ect": {
+      "operating_min_C": 80,
+      "operating_max_C": 105,
+      "overheat_C": 118
+    },
+    "can_health": {
+      "dropout_fault_threshold_pct": 5
+    }
+  }
+}

@@ -1,0 +1,20 @@
+# Python
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+*.pyc
+*.pyo
+backend/feedback_log.json
+
+# Node
+frontend/node_modules/
+
+# Build
+frontend/build/
+
+# Env
+.env
+.env.local
+
+# macOS
+.DS_Store
